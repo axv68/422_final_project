@@ -37,6 +37,8 @@ public class AuctionClient extends Application {
 	BufferedReader fromServer = null;
 	TextArea ta = new TextArea();
 	String data = ""; 
+	public String username = ""; 
+	//public boolean userNameAccepted = false; 
 
 	@Override
 	public void start(Stage primaryStage) { 
@@ -44,14 +46,24 @@ public class AuctionClient extends Application {
 		BorderPane textPane = new BorderPane(); 
 		textPane.setPadding(new Insets(5, 5, 5, 5)); 
 		textPane.setStyle("-fx-border-color: green");
-		textPane.setLeft(new Label("Enter a message: "));
+		//textPane.setLeft(new Label("Enter a message: "));
 		
 		TextField tf = new TextField(); 
 		tf.setAlignment(Pos.BOTTOM_RIGHT);
+		tf.setPromptText("Enter your message");
 		textPane.setCenter(tf);
+		tf.setDisable(true); //don't allow textfield to work yet******
+		
+		//username field*****ADDED FIELD
+		TextField userName = new TextField(); 
+		userName.setAlignment(Pos.BASELINE_LEFT);
+		userName.setPromptText("Enter a username");
+		textPane.setLeft(userName);
+		//***
 		
 		BorderPane mainPane = new BorderPane(); 
 		ta = new TextArea(); //***************************8
+		ta.setDisable(true); //don't allow textfield to work yet******
 		mainPane.setCenter(new ScrollPane(ta));
 		mainPane.setTop(textPane);
 
@@ -63,6 +75,7 @@ public class AuctionClient extends Application {
 
 		tf.setOnAction(e -> { 
 			try {
+				
 				String message = tf.getText().trim();
 				
 				toServer.println(message); 
@@ -70,9 +83,31 @@ public class AuctionClient extends Application {
 				tf.setText("");
 				
 				toServer.flush(); 
+				
+			}
+			catch (Exception ex){
+				System.err.println(ex); 
+			}
+		}); 
+		
+		userName.setOnAction(e -> { 
+			try {
+				
+				String username = userName.getText().trim();
+				
+				toServer.println(username); 
+				
+				tf.setText("");
+				
+				toServer.flush(); 
+				
+				userName.setDisable(true);
+				ta.setDisable(false);
+				tf.setDisable(false);
+				
+				primaryStage.setTitle(username);
 
-//				String received = fromServer.readLine(); 
-//				
+//				String received = fromServer.readLine(); 	
 //				ta.appendText("Message is " + received + " \n"); 
 				
 			}
