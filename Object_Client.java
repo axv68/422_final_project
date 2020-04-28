@@ -196,10 +196,9 @@ public class Object_Client extends Application {
 					Platform.runLater(new Runnable() { // Run from JavaFX GUI 
 						@Override 
 						public void run() { 
-							ta.appendText(data + "\n");
+							ta.appendText(data + "\n"); 
 						} 
 				}); 
-					
 				}
 			} catch (IOException ex) {
 				ex.printStackTrace();

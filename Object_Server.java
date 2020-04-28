@@ -45,14 +45,6 @@ public class Object_Server extends Observable{
         } catch (IOException e) {}
     }
 	
-	/* Updating the clients with notifyClients function*/
-//	private void notifyClients(String message) {
-//		for (PrintWriter writer : clientOutputStreams) {
-//			writer.println(message); 
-//			writer.flush();
-//		}
-//	}
-	
 	 public void populateItems() {
  		// TODO Auto-generated method stub
      	//generate all the items to send to client o GUI
@@ -116,30 +108,32 @@ public class Object_Server extends Observable{
         	
         	if (message.type == Message.message_type.username) {
         		String msg = message.username + " has joined the auction"; 
-//        		if (database.containsKey(message.username) == false) {
-//        			ArrayList<String> userRecord = new ArrayList<String>(); 
-//        			database.put(message.username, userRecord); 
-//        		}
+        		if (database.containsKey(message.username) == false) {
+        			ArrayList<String> userRecord = new ArrayList<String>(); 
+        			database.put(message.username, userRecord); 
+        		}
         		setChanged(); 
         		notifyObservers(msg);
         	}
         	
         	else if (message.type == Message.message_type.bid) {
         		String msg = message.username + ": " + message.content; 
-        		//database.get(message.username).add(message.content); 
-        		//setChanged(); 
-        		//notifyObservers(msg);  
+        		database.get(message.username).add(message.content); 
+        		setChanged(); 
+        		notifyObservers(msg);  
         		
-        		writer.flush();
-        		writer.writeToMe("Server got your bid");
-        		
+//        		writer.writeToMe("Server got your bid: " + message.content);
+//        		writer.flush();
         		
         	}
         	
         	else if(message.type == Message.message_type.history) {
-        		for (int i = 0; i < database.get(message.username).size(); i++) {
-        			setChanged(); 
-            		notifyObservers(database.get(message.username).get(i));
+        		ArrayList<String> bids = database.get(message.username); 
+        		for (int i = 0; i < bids.size(); i++) {
+        			//setChanged(); 
+        			System.out.println(bids.get(i));
+            		writer.writeToMe(bids.get(i));
+            		writer.flush();
         		}
         	}
         	
