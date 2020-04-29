@@ -17,7 +17,7 @@ public class Object_Server extends Observable{
     ArrayList<ClientObserver> clientOutputStreams;
     ArrayList<Thread> clients = new ArrayList<Thread>(); 
     
-    public ArrayList<AuctionItem> itemList = new ArrayList<AuctionItem>(); 
+    public static ArrayList<AuctionItem> itemList = new ArrayList<AuctionItem>(); 
     
     public HashMap<String, ArrayList<String>> database = new HashMap<String, ArrayList<String>>(); 
     
@@ -119,18 +119,19 @@ public class Object_Server extends Observable{
         	else if (message.type == Message.message_type.bid) {
         		String msg = message.username + ": " + message.content; 
         		database.get(message.username).add(message.content); 
-        		setChanged(); 
-        		notifyObservers(msg);  
+//        		setChanged(); 
+//        		notifyObservers(msg);  
         		
-//        		writer.writeToMe("Server got your bid: " + message.content);
-//        		writer.flush();
+        		writer.writeToMe("Server got your bid: " + message.content);
+        		writer.flush();
         		
         	}
         	
         	else if(message.type == Message.message_type.history) {
         		ArrayList<String> bids = database.get(message.username); 
         		for (int i = 0; i < bids.size(); i++) {
-        			//setChanged(); 
+//        			setChanged(); 
+//        			notifyObservers(bids.get(i));  
         			System.out.println(bids.get(i));
             		writer.writeToMe(bids.get(i));
             		writer.flush();

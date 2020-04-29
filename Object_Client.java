@@ -13,10 +13,12 @@ import java.net.Socket;
 import assignment7.Message.message_type;
 import javafx.application.Application;
 import javafx.application.Platform;
+import javafx.collections.ObservableList;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
+import javafx.scene.control.ComboBox;
 import javafx.scene.control.Label;
 import javafx.scene.control.ScrollPane;
 import javafx.scene.control.TextArea;
@@ -42,18 +44,19 @@ public class Object_Client extends Application {
 	String data = ""; 
 	public String username = ""; 
 	//public boolean userNameAccepted = false; 
+	static ComboBox<String> itemList; 
 
 	@Override
 	public void start(Stage primaryStage) { 
 	
 		BorderPane textPane = new BorderPane(); 
 		textPane.setPadding(new Insets(5, 5, 5, 5)); 
-		textPane.setStyle("-fx-border-color: green");
+		textPane.setStyle("-fx-border-color: red");
 		//textPane.setLeft(new Label("Enter a message: "));
 		
 		
 		TextField messageArea = new TextField(); 
-		messageArea.setAlignment(Pos.BOTTOM_RIGHT);
+		messageArea.setAlignment(Pos.BASELINE_RIGHT);
 		messageArea.setPromptText("Enter your message");
 		textPane.setCenter(messageArea);
 		messageArea.setDisable(true); //don't allow textfield to work yet******
@@ -86,6 +89,22 @@ public class Object_Client extends Application {
 		quit.setAlignment(Pos.BOTTOM_LEFT);
 		//*****
 		
+		//Dropdown menu of items 
+		itemList = new ComboBox(); 
+		itemList.setPromptText("Select an item");
+		itemList.setDisable(true);
+//				for (int i = 0; i < Object_Server.itemList.size(); i++) {
+//					itemList.getItems().add(Object_Server.itemList.get(i).itemName); 
+//				}
+		itemList.getItems().addAll(
+			            "Trumpet",
+			            "Painting",
+			            "Tiger",
+			            "Camera"
+		);   
+		textPane.setBottom(itemList);
+		
+		//***********
 		
 		BorderPane mainPane = new BorderPane(); 
 		ta = new TextArea(); //***************************8
@@ -96,6 +115,7 @@ public class Object_Client extends Application {
 		mainPane.setRight(history);
 		mainPane.setBottom(quit);
 		//set item fields here
+		
 
 		// Create a scene and place it in the stage 
 		Scene scene = new Scene(mainPane, 550, 300); 
@@ -118,13 +138,22 @@ public class Object_Client extends Application {
 			System.exit(0); 
 		});
 
-		messageArea.setOnAction(e -> { 
+		messageArea.setOnAction(e -> { //need to rewrite
 			try {
 				String message = messageArea.getText().trim();
-				Message msg = new Message(message_type.bid, username, message);
-				toServer.writeObject(msg);
-				messageArea.setText("");
-				toServer.flush(); 
+				String item = itemList.getValue(); 
+				if (item != null) {
+					String total = item + " " + message; 
+					Message msg = new Message(message_type.bid, username, total);
+					toServer.writeObject(msg);
+					messageArea.setText("");
+					toServer.flush(); 
+				}
+				else {
+					ta.appendText("**You must select an item**" + "\n");
+					messageArea.setText("");
+				}
+				
 			}
 			catch (Exception ex){
 				System.err.println(ex); 
@@ -134,10 +163,18 @@ public class Object_Client extends Application {
 		send.setOnAction(e -> { 
 			try {
 				String message = messageArea.getText().trim();
-				Message msg = new Message(message_type.bid, username, message); 
-				toServer.writeObject(msg);
-				messageArea.setText("");
-				toServer.flush(); 
+				String item = itemList.getValue(); 
+				if (item != null) {
+					String total = item + " " + message; 
+					Message msg = new Message(message_type.bid, username, total);
+					toServer.writeObject(msg);
+					messageArea.setText("");
+					toServer.flush(); 
+				}
+				else {
+					ta.appendText("**You must select an item**" + "\n");
+					messageArea.setText("");
+				}
 			}
 			catch (Exception ex){
 				System.err.println(ex); 
@@ -156,6 +193,7 @@ public class Object_Client extends Application {
 				messageArea.setDisable(false);
 				send.setDisable(false);
 				history.setDisable(false); 
+				itemList.setDisable(false);
 				primaryStage.setTitle("Auction Client - " + username);
 			}
 			catch (Exception ex){
@@ -193,12 +231,13 @@ public class Object_Client extends Application {
 					System.out.println("Message is " + message); 
 					
 					data = message; 
-					Platform.runLater(new Runnable() { // Run from JavaFX GUI 
-						@Override 
-						public void run() { 
-							ta.appendText(data + "\n"); 
-						} 
-				}); 
+					ta.appendText(data + "\n"); 
+//					Platform.runLater(new Runnable() { // Run from JavaFX GUI 
+//						@Override 
+//						public void run() { 
+//							ta.appendText(data + "\n"); 
+//						} 
+//				}); 
 				}
 			} catch (IOException ex) {
 				ex.printStackTrace();
