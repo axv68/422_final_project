@@ -10,12 +10,15 @@ import java.io.ObjectOutputStream;
 import java.io.PrintWriter;
 import java.net.Socket;
 
+import com.sun.glass.ui.Application.EventHandler;
+
 import assignment7.Message.message_type;
 import javafx.application.Application;
 import javafx.application.Platform;
 import javafx.collections.ObservableList;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
+import javafx.scene.Cursor;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
 import javafx.scene.control.ComboBox;
@@ -44,7 +47,7 @@ public class Object_Client extends Application {
 	String data = ""; 
 	public String username = ""; 
 	//public boolean userNameAccepted = false; 
-	static ComboBox<String> itemList; 
+	static ComboBox<String> itemList; // = new ComboBox();
 
 	@Override
 	public void start(Stage primaryStage) { 
@@ -52,18 +55,17 @@ public class Object_Client extends Application {
 		BorderPane textPane = new BorderPane(); 
 		textPane.setPadding(new Insets(5, 5, 5, 5)); 
 		textPane.setStyle("-fx-border-color: red");
-		//textPane.setLeft(new Label("Enter a message: "));
 		
 		
 		TextField messageArea = new TextField(); 
-		messageArea.setAlignment(Pos.BASELINE_RIGHT);
-		messageArea.setPromptText("Enter your message");
+		messageArea.setAlignment(Pos.BASELINE_LEFT);
+		messageArea.setPromptText("Enter your bid");
 		textPane.setCenter(messageArea);
 		messageArea.setDisable(true); //don't allow textfield to work yet******
 		
 		//Button for the message field
 		Button send = new Button(); 
-		send.setText("Send"); 
+		send.setText("Send Bid"); 
 		send.setAlignment(Pos.BOTTOM_RIGHT);
 		send.setDisable(true); //don't allow button to work yet******
 		textPane.setRight(send);
@@ -92,10 +94,7 @@ public class Object_Client extends Application {
 		//Dropdown menu of items 
 		itemList = new ComboBox(); 
 		itemList.setPromptText("Select an item");
-		itemList.setDisable(true);
-//				for (int i = 0; i < Object_Server.itemList.size(); i++) {
-//					itemList.getItems().add(Object_Server.itemList.get(i).itemName); 
-//				}
+		itemList.setDisable(true); 
 		itemList.getItems().addAll(
 			            "Trumpet",
 			            "Painting",
@@ -137,7 +136,17 @@ public class Object_Client extends Application {
 		quit.setOnAction(e -> { 
 			System.exit(0); 
 		});
-
+		
+		messageArea.setOnMouseClicked(e -> { //FIX THIS*****
+			try {
+				messageArea.setText("$");
+			}
+			catch (Exception ex){
+				System.err.println(ex); 
+			}
+		}); 
+		
+		
 		messageArea.setOnAction(e -> { //need to rewrite
 			try {
 				String message = messageArea.getText().trim();
@@ -228,7 +237,7 @@ public class Object_Client extends Application {
 			String message = null;
 			try {
 				while ((message = fromServer.readLine()) != null) {
-					System.out.println("Message is " + message); 
+					System.out.println("Message is: " + message); 
 					
 					data = message; 
 					ta.appendText(data + "\n"); 

@@ -23,7 +23,7 @@ public class Object_Server extends Observable{
     
     public static void main (String [] args) {
         server = new Object_Server();
-        //server.populateItems();
+        server.populateItems();
         server.SetupNetworking(); 
     }
 
@@ -57,7 +57,13 @@ public class Object_Server extends Observable{
      	itemList.add(painting); 
      	itemList.add(tiger); 
      	itemList.add(camera); 
- 		
+     	
+//     	Object_Client.itemList.getItems().addAll(
+//     			"Trumpet",
+//	            "Painting",
+//	            "Tiger",
+//	            "Chainsaw"
+//     	); 
  	}
 	
 	
@@ -122,20 +128,33 @@ public class Object_Server extends Observable{
 //        		setChanged(); 
 //        		notifyObservers(msg);  
         		
-        		writer.writeToMe("Server got your bid: " + message.content);
+        		writer.writeToMe("Server got bid from " + message.username + " : " + message.content);
         		writer.flush();
         		
         	}
         	
         	else if(message.type == Message.message_type.history) {
         		ArrayList<String> bids = database.get(message.username); 
-        		for (int i = 0; i < bids.size(); i++) {
-//        			setChanged(); 
-//        			notifyObservers(bids.get(i));  
-        			System.out.println(bids.get(i));
-            		writer.writeToMe(bids.get(i));
-            		writer.flush();
+        		if (bids.size() == 0) {
+        			writer.writeToMe("You have no bid history"); 
+        			writer.flush(); 
         		}
+        		else {
+        			writer.writeToMe("______________________");
+        			writer.flush();
+        			writer.writeToMe("**YOUR BID HISTORY**");
+        			writer.flush();
+        			for (int i = 0; i < bids.size(); i++) {
+//            			setChanged(); 
+//            			notifyObservers(bids.get(i));  
+            			System.out.println(bids.get(i));
+                		writer.writeToMe(bids.get(i));
+                		writer.flush();
+            		}
+        			writer.writeToMe("______________________");
+        			writer.flush();
+        		}
+        		
         	}
         	
 //        	1.) checking the item 
