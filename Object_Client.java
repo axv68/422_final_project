@@ -9,6 +9,7 @@ import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.io.PrintWriter;
 import java.net.Socket;
+import java.util.ArrayList;
 
 import com.sun.glass.ui.Application.EventHandler;
 
@@ -51,17 +52,19 @@ public class Object_Client extends Application {
 
 	@Override
 	public void start(Stage primaryStage) { 
+
+		//TODO - mainPane set top to horizonatal box
 	
 		BorderPane textPane = new BorderPane(); 
 		textPane.setPadding(new Insets(5, 5, 5, 5)); 
 		textPane.setStyle("-fx-border-color: red");
 		
 		
-		TextField messageArea = new TextField(); 
-		messageArea.setAlignment(Pos.BASELINE_LEFT);
-		messageArea.setPromptText("Enter your bid");
-		textPane.setCenter(messageArea);
-		messageArea.setDisable(true); //don't allow textfield to work yet******
+		TextField bidField = new TextField(); 
+		bidField.setAlignment(Pos.BASELINE_LEFT);
+		bidField.setPromptText("Enter your bid");
+		textPane.setCenter(bidField);
+		bidField.setDisable(true); //don't allow textfield to work yet******
 		
 		//Button for the message field
 		Button send = new Button(); 
@@ -137,9 +140,9 @@ public class Object_Client extends Application {
 			System.exit(0); 
 		});
 		
-		messageArea.setOnMouseClicked(e -> { //FIX THIS*****
+		bidField.setOnMouseClicked(e -> { //FIX THIS*****
 			try {
-				messageArea.setText("$");
+				bidField.setText("$");
 			}
 			catch (Exception ex){
 				System.err.println(ex); 
@@ -147,20 +150,44 @@ public class Object_Client extends Application {
 		}); 
 		
 		
-		messageArea.setOnAction(e -> { //need to rewrite
+		bidField.setOnAction(e -> { //need to rewrite
 			try {
-				String message = messageArea.getText().trim();
+				String message = bidField.getText().trim();
 				String item = itemList.getValue(); 
+				int flag = 1; 
 				if (item != null) {
-					String total = item + " " + message; 
-					Message msg = new Message(message_type.bid, username, total);
-					toServer.writeObject(msg);
-					messageArea.setText("");
-					toServer.flush(); 
+					char[] bid = message.toCharArray(); 
+					ArrayList<Character> mine = new ArrayList<Character>(); 
+					for (int i = 0; i < bid.length; i++) {
+						mine.add(bid[i]); 
+					}
+					if (mine.get(0) == '$') {
+						mine.remove(0); 
+						String num = ""; 
+						for (int i = 0; i < mine.size();i++) {
+							num = num + mine.get(i); 
+						}
+						try {
+							Double bidPrice = Double.parseDouble(num); 
+						}
+						catch(NumberFormatException ex) {
+							ta.appendText("--Please Enter A Valid Bid--" + "\n");
+							bidField.setText(""); 
+							flag = 0; 
+						}
+					}
+					
+					if (flag != 0) {
+						String total = item + " " + message; 
+						Message msg = new Message(message_type.bid, username, total);
+						toServer.writeObject(msg);
+						bidField.setText("");
+						toServer.flush(); 
+					}
 				}
 				else {
-					ta.appendText("**You must select an item**" + "\n");
-					messageArea.setText("");
+					ta.appendText("**You Must Select An Item**" + "\n");
+					bidField.setText("");
 				}
 				
 			}
@@ -171,19 +198,44 @@ public class Object_Client extends Application {
 		
 		send.setOnAction(e -> { 
 			try {
-				String message = messageArea.getText().trim();
+				String message = bidField.getText().trim();
 				String item = itemList.getValue(); 
+				int flag = 1; 
 				if (item != null) {
-					String total = item + " " + message; 
-					Message msg = new Message(message_type.bid, username, total);
-					toServer.writeObject(msg);
-					messageArea.setText("");
-					toServer.flush(); 
+					char[] bid = message.toCharArray(); 
+					ArrayList<Character> mine = new ArrayList<Character>(); 
+					for (int i = 0; i < bid.length; i++) {
+						mine.add(bid[i]); 
+					}
+					if (mine.get(0) == '$') {
+						mine.remove(0); 
+						String num = ""; 
+						for (int i = 0; i < mine.size();i++) {
+							num = num + mine.get(i); 
+						}
+						try {
+							Double bidPrice = Double.parseDouble(num); 
+						}
+						catch(NumberFormatException ex) {
+							ta.appendText("--Please Enter A Valid Bid--" + "\n");
+							bidField.setText(""); 
+							flag = 0; 
+						}
+					}
+					
+					if (flag != 0) {
+						String total = item + " " + message; 
+						Message msg = new Message(message_type.bid, username, total);
+						toServer.writeObject(msg);
+						bidField.setText("");
+						toServer.flush(); 
+					}
 				}
 				else {
-					ta.appendText("**You must select an item**" + "\n");
-					messageArea.setText("");
+					ta.appendText("**You Must Select An Item**" + "\n");
+					bidField.setText("");
 				}
+				
 			}
 			catch (Exception ex){
 				System.err.println(ex); 
@@ -199,7 +251,7 @@ public class Object_Client extends Application {
 				
 				userName.setDisable(true);
 				ta.setDisable(false);
-				messageArea.setDisable(false);
+				bidField.setDisable(false);
 				send.setDisable(false);
 				history.setDisable(false); 
 				itemList.setDisable(false);

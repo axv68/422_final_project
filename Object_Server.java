@@ -11,6 +11,8 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Observable;
 
+import javafx.scene.control.ComboBox;
+
 public class Object_Server extends Observable{
 	
 	static Object_Server server;
@@ -48,6 +50,7 @@ public class Object_Server extends Observable{
 	 public void populateItems() {
  		// TODO Auto-generated method stub
      	//generate all the items to send to client o GUI
+		 
      	AuctionItem trumpet = new AuctionItem("Trumpet", 50000, 35); 
      	AuctionItem painting = new AuctionItem("Painting", 35000, 35); 
      	AuctionItem tiger = new AuctionItem("Tiger", 620000, 35); 
@@ -58,12 +61,7 @@ public class Object_Server extends Observable{
      	itemList.add(tiger); 
      	itemList.add(camera); 
      	
-//     	Object_Client.itemList.getItems().addAll(
-//     			"Trumpet",
-//	            "Painting",
-//	            "Tiger",
-//	            "Chainsaw"
-//     	); 
+     	//have to send items thru string
  	}
 	
 	
