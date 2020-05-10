@@ -1,4 +1,4 @@
-package assignment7;
+package final_exam;
 
 public class AuctionItem {
 	

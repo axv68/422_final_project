@@ -1,4 +1,4 @@
-package assignment7;
+package final_exam;
 
 import java.io.BufferedReader;
 import java.io.EOFException;

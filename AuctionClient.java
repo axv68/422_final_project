@@ -16,7 +16,6 @@ import com.sun.glass.ui.Application.EventHandler;
 import final_exam.Message.message_type;
 import javafx.application.Application;
 import javafx.application.Platform;
-import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
@@ -25,7 +24,6 @@ import javafx.scene.Scene;
 import javafx.scene.control.Button;
 import javafx.scene.control.ComboBox;
 import javafx.scene.control.Label;
-import javafx.scene.control.ListView;
 import javafx.scene.control.ScrollPane;
 import javafx.scene.control.TextArea;
 import javafx.scene.control.TextField;
@@ -41,20 +39,17 @@ import javafx.stage.Stage;
  * It doesn't compile.
  */
 
-public class Client extends Application { 
+public class AuctionClient extends Application { 
 	// I/O streams 
-	ObjectOutputStream toServer = null; //
+	ObjectOutputStream toServer = null; //************ObjectOutputStream
+	//DataInputStream fromServer = null;
 	BufferedReader fromServer = null;
 	TextArea ta = new TextArea();
 	String data = ""; 
 	public String username = ""; 
+	//public boolean userNameAccepted = false; 
 	static ComboBox<String> itemList; // = new ComboBox();
-	
-	static ObservableList<String> names = FXCollections.observableArrayList(
-	          "Trumpet", "Painting", "Tiger", "Camera", "Sword");
 
-	
-	
 	@Override
 	public void start(Stage primaryStage) { 
 
@@ -62,14 +57,12 @@ public class Client extends Application {
 	
 		BorderPane textPane = new BorderPane(); 
 		textPane.setPadding(new Insets(5, 5, 5, 5)); 
-		textPane.setStyle("-fx-border-color: black; -fx-background-color: papayawhip;");
-		//textPane.setStyle("-fx-background-color: papayawhip"); 
+		textPane.setStyle("-fx-border-color: red");
 		
 		
 		TextField bidField = new TextField(); 
 		bidField.setAlignment(Pos.BASELINE_LEFT);
 		bidField.setPromptText("Enter your bid");
-		bidField.setStyle("-fx-border-color: green");
 		textPane.setCenter(bidField);
 		bidField.setDisable(true); //don't allow textfield to work yet******
 		
@@ -77,8 +70,7 @@ public class Client extends Application {
 		Button send = new Button(); 
 		send.setText("Send Bid"); 
 		send.setAlignment(Pos.BOTTOM_RIGHT);
-		send.setDisable(true); //don't allow button to work yet*****
-		send.setStyle("-fx-background-color: AQUAMARINE; -fx-border-color: black;");
+		send.setDisable(true); //don't allow button to work yet******
 		textPane.setRight(send);
 		//******
 		
@@ -87,8 +79,6 @@ public class Client extends Application {
 		history.setText("Get Bid History"); 
 		history.setAlignment(Pos.BOTTOM_LEFT);
 		history.setDisable(true); //don't allow button to work yet******
-		history.setStyle("-fx-background-color: lightblue; -fx-border-color: black;");
-		
 		//******
 		
 		//username field
@@ -102,8 +92,6 @@ public class Client extends Application {
 		Button quit = new Button(); 
 		quit.setText("Leave Auction"); 
 		quit.setAlignment(Pos.BOTTOM_LEFT);
-		quit.setStyle("-fx-background-color: CORAL; -fx-border-color: black;");
-		
 		//*****
 		
 		//Dropdown menu of items 
@@ -118,54 +106,25 @@ public class Client extends Application {
 			            "Sword"
 		);   
 		textPane.setBottom(itemList);
-		itemList.setStyle("-fx-background-color: thistle; -fx-border-color: black;");
-		
-
 		
 		//***********
 		
 		BorderPane mainPane = new BorderPane(); 
 		ta = new TextArea(); //***************************8
-		ta.setStyle("-fx-control-inner-background: LIGHTCYAN");
-		ta.setEditable(false);
 		ta.setDisable(true); //don't allow textfield to work yet******
 		mainPane.setCenter(new ScrollPane(ta));
 		mainPane.setTop(textPane);
 		
 		mainPane.setRight(history);
 		mainPane.setBottom(quit);
-		
-		//Showing Timers with Items
-		ListView<String> listView = new ListView<String>(names); 
-		listView.setStyle("-fx-control-inner-background: beige");
-		mainPane.setLeft(listView); 
-		
-		mainPane.setStyle("-fx-background-color: MISTYROSE");
-		
 		//set item fields here
 		
 
 		// Create a scene and place it in the stage 
-		Scene scene = new Scene(mainPane, 750, 300); 
+		Scene scene = new Scene(mainPane, 550, 300); 
 		primaryStage.setTitle("Client"); // Set the stage title 
 		primaryStage.setScene(scene); // Place the scene in the stage 
 		primaryStage.show(); // Display the stage 
-		
-		itemList.setOnMouseEntered(e -> {
-			itemList.setStyle("-fx-background-color: azure; -fx-border-color: black;");
-		}); 
-		
-		itemList.setOnMouseExited(e -> {
-			itemList.setStyle("-fx-background-color: thistle; -fx-border-color: black;");
-		});
-		
-		history.setOnMouseEntered(e -> {
-			history.setStyle("-fx-background-color: azure; -fx-border-color: black;");
-		}); 
-		
-		history.setOnMouseExited(e -> {
-			history.setStyle("-fx-background-color: lightblue; -fx-border-color: black;");
-		});
 		
 		history.setOnAction(e -> { 
 			try {
@@ -182,15 +141,7 @@ public class Client extends Application {
 			System.exit(0); 
 		});
 		
-		quit.setOnMouseEntered(e -> {
-			quit.setStyle("-fx-background-color: azure; -fx-border-color: black;");
-		}); 
-		
-		quit.setOnMouseExited(e -> {
-			quit.setStyle("-fx-background-color: coral; -fx-border-color: black;");
-		});
-		
-		bidField.setOnMouseClicked(e -> { 
+		bidField.setOnMouseClicked(e -> { //FIX THIS*****
 			try {
 				bidField.setText("$");
 			}
@@ -202,8 +153,6 @@ public class Client extends Application {
 		
 		bidField.setOnAction(e -> { //need to rewrite
 			try {
-				
-				
 				String message = bidField.getText().trim();
 				String item = itemList.getValue(); 
 				int flag = 1; 
@@ -232,11 +181,9 @@ public class Client extends Application {
 					if (flag != 0) {
 						String total = item + " " + message; 
 						Message msg = new Message(message_type.bid, username, total);
-						//synchronized(sendLock) {
-							toServer.writeObject(msg);
-							bidField.setText("");
-							toServer.flush(); 
-						//}
+						toServer.writeObject(msg);
+						bidField.setText("");
+						toServer.flush(); 
 					}
 				}
 				else {
@@ -249,14 +196,6 @@ public class Client extends Application {
 				System.err.println(ex); 
 			}
 		}); 
-		
-		send.setOnMouseEntered(e -> {
-			send.setStyle("-fx-background-color: azure; -fx-border-color: black;");
-		}); 
-		
-		send.setOnMouseExited(e -> {
-			send.setStyle("-fx-background-color: AQUAMARINE; -fx-border-color: black;");
-		});
 		
 		send.setOnAction(e -> { 
 			try {
@@ -306,7 +245,6 @@ public class Client extends Application {
 		
 		userName.setOnAction(e -> { //setting username field
 			try {
-				
 				username = userName.getText().trim();
 				Message msg = new Message(message_type.username, username, ""); 
 				toServer.writeObject(msg);
@@ -336,7 +274,6 @@ public class Client extends Application {
 			toServer = new ObjectOutputStream(socket.getOutputStream()); //*****ObjectOutputStream
 			Thread readerThread = new Thread(new IncomingReader());
 			readerThread.start();
-			
 		} 
 		catch (IOException ex) { 
 			ta.appendText(ex.toString() + '\n');
@@ -353,18 +290,21 @@ public class Client extends Application {
 			String message = null;
 			try {
 				while ((message = fromServer.readLine()) != null) {
+					System.out.println("Message is: " + message); 
 					
-						System.out.println("Message is: " + message); 
-						
-						data = message; 
-						ta.appendText(data + "\n"); 
-
+					data = message; 
+					ta.appendText(data + "\n"); 
+//					Platform.runLater(new Runnable() { // Run from JavaFX GUI 
+//						@Override 
+//						public void run() { 
+//							ta.appendText(data + "\n"); 
+//						} 
+//				}); 
 				}
 			} catch (IOException ex) {
 				ex.printStackTrace();
 			}
 		}
 	}
-
 
 }
