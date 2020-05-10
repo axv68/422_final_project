@@ -4,7 +4,8 @@ import java.io.Serializable;
 
 public class Message implements Serializable{
 	
-	String username = ""; 
+	public String username = "";
+	public String content = ""; 
 	
 	
 	enum message_type{
@@ -13,13 +14,13 @@ public class Message implements Serializable{
 	
 	message_type type; 
 	
-	Message(message_type topic, String name){
+	Message(message_type topic, String name, String msg){
 		type = topic; 
 		username = name; 
-		
-		
+		content = msg; 
 	}
 		
+	
 
 }
 

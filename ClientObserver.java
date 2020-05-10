@@ -13,10 +13,15 @@ public class ClientObserver extends PrintWriter implements Observer{
 	}
 
 	@Override
-	public void update(Observable o, Object arg) {
+	public void update(Observable o, Object arg) { //****need to update this based on the message broadcasted from the server
 		this.println(arg);
 		this.flush();
 		
+	}
+	
+	public void writeToMe(Object arg) {
+		this.println(arg); 
+		this.flush();
 	}
 
 

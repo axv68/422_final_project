@@ -4,9 +4,10 @@ public class AuctionItem {
 	
 	public String itemName; 
 	public int timer; 
-	public int minPrice; 
+	public double minPrice; 
+	public String buyer = "Unknown"; 
 	
-	public AuctionItem(String name, Integer time, Integer price) { 
+	public AuctionItem(String name, Integer time, Double price) { 
 		this.itemName = name; 
 		this.timer = time; 
 		this.minPrice = price; 
