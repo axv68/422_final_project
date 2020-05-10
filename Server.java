@@ -1,3 +1,11 @@
+/**  EE422C Final Project submission by
+ *  Amit Verma
+ *  axv68
+ *  16320
+ *   Spring 2020
+ */
+
+
 package final_exam;
 
 import java.io.BufferedReader;

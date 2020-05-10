@@ -1,3 +1,11 @@
+/**  EE422C Final Project submission by
+ *  Amit Verma
+ *  axv68
+ *  16320
+ *   Spring 2020
+ */
+
+
 package final_exam;
 
 import java.io.BufferedReader;
@@ -33,13 +41,6 @@ import javafx.scene.layout.BorderPane;
 import javafx.scene.paint.Color;
 import javafx.stage.Stage;
 
-
-/*
- * Author: Vallath Nandakumar and EE 422C instructors
- * Date: April 20, 2020
- * This starter code is from the MultiThreadChat example from the lecture, and is on Canvas. 
- * It doesn't compile.
- */
 
 public class Client extends Application { 
 	// I/O streams 
