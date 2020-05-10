@@ -239,6 +239,7 @@ public class Server extends Observable{
 		    		 setChanged(); 
 			    	 notifyObservers(itemList.get(3).itemName + " is UNSOLD!");
 		    	 }
+		    	 itemSold.set(3, true); 
 		    }
 		    if (t4interval == 6) {
 		    	setChanged(); 
@@ -248,7 +249,6 @@ public class Server extends Observable{
 		    	setChanged(); 
 		    	notifyObservers(itemList.get(3).itemName + " has 30 seconds left!"); 
 		    }
-	    	 itemSold.set(3, true); 
 		    return --t4interval;
 	 }
 	 public int setInterval5() {
