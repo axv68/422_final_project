@@ -28,6 +28,8 @@ public class Server extends Observable{
     
     public ArrayList<Boolean> itemSold = new ArrayList<Boolean>(); 
     
+	static Object messageLock = new Object(); 
+    
     //timers for the items 
     static Timer t1;
 	static Timer t2; 
@@ -310,7 +312,6 @@ public class Server extends Observable{
         }
         
         private void parse(Message message) { //will understand what the client sent a valid message but potential invalid bid 
-        	
         	if (message.type == Message.message_type.username) {
         		String msg = message.username + " has joined the auction"; 
         		if (database.containsKey(message.username) == false) {
@@ -322,63 +323,64 @@ public class Server extends Observable{
         	}
         	
         	else if (message.type == Message.message_type.bid) {
-        		
-        		database.get(message.username).add(message.content); 
-        		boolean validBid = false; 
-        		double minPrice = 0.0; 
-        		String[] msg = message.content.split(" "); //splits the bid into the item and the bid amount
-        		char[] bid = msg[1].toCharArray(); 
-        		
-        		int itemIndex = 0; 
-        		for (int i = 0; i < itemList.size(); i++) {
-        			if (msg[0].contentEquals(itemList.get(i).itemName)) {
-            			minPrice = itemList.get(i).minPrice; //gets the minimum price of the item 
-            			itemIndex = i; 
+        		synchronized(messageLock) {
+        			database.get(message.username).add(message.content); 
+            		boolean validBid = false; 
+            		double minPrice = 0.0; 
+            		String[] msg = message.content.split(" "); //splits the bid into the item and the bid amount
+            		char[] bid = msg[1].toCharArray(); 
+            		
+            		int itemIndex = 0; 
+            		for (int i = 0; i < itemList.size(); i++) {
+            			if (msg[0].contentEquals(itemList.get(i).itemName)) {
+                			minPrice = itemList.get(i).minPrice; //gets the minimum price of the item 
+                			itemIndex = i; 
+                		}
             		}
-        		}
-        		
-        		ArrayList<Character> bidAmount = new ArrayList<Character>(); 
-        		Double bidPrice = 0.0; 
-        		
-				for (int i = 0; i < bid.length; i++) { 
-					bidAmount.add(bid[i]); 
-				}
-				if (bidAmount.get(0) == '$') {
-					bidAmount.remove(0); 
-					String num = ""; 
-					for (int i = 0; i < bidAmount.size();i++) {
-						num = num + bidAmount.get(i); 
-					} 
-					try {
-						bidPrice = Double.parseDouble(num); 
-					}
-					catch(NumberFormatException ex) {
-						writer.writeToMe("Invalid bid for " + msg[0]);
-	            		writer.flush();
-					}
-				}
-				if (bidPrice > minPrice) {
-					if (itemSold.get(itemIndex) == false) {
-						validBid = true; 
-						itemList.get(itemIndex).minPrice = bidPrice; 
-						itemList.get(itemIndex).buyer = message.username;
-					}
-					else {
-						writer.writeToMe("Sorry but your bid can't be processed because time is up for " + itemList.get(itemIndex).itemName);
-	            		writer.flush();
-					}
-					
-				}
-        		
-        		if(validBid == true && itemSold.get(itemIndex) == false) {
-        			setChanged(); 
-            		notifyObservers("ALERT: New bid of " + msg[1]  + " for " + msg[0] + " by " + message.username);  
-        		}
-        		else if (validBid == false && itemSold.get(itemIndex) == false) {
-        			writer.writeToMe("[Bid of " + msg[1] + " for " + msg[0] + " is at or below the new min price, which is " + "$" + itemList.get(itemIndex).minPrice + "]");
-            		writer.flush();
-        		}
-        		
+            		
+            		ArrayList<Character> bidAmount = new ArrayList<Character>(); 
+            		Double bidPrice = 0.0; 
+            		
+    				for (int i = 0; i < bid.length; i++) { 
+    					bidAmount.add(bid[i]); 
+    				}
+    				if (bidAmount.get(0) == '$') {
+    					bidAmount.remove(0); 
+    					String num = ""; 
+    					for (int i = 0; i < bidAmount.size();i++) {
+    						num = num + bidAmount.get(i); 
+    					} 
+    					try {
+    						bidPrice = Double.parseDouble(num); 
+    					}
+    					catch(NumberFormatException ex) {
+    						writer.writeToMe("Invalid bid for " + msg[0]);
+    	            		writer.flush();
+    					}
+    				}
+    				if (bidPrice > minPrice) {
+    					if (itemSold.get(itemIndex) == false) {
+    						validBid = true; 
+    						itemList.get(itemIndex).minPrice = bidPrice; 
+    						itemList.get(itemIndex).buyer = message.username;
+    					}
+    					else {
+    						writer.writeToMe("Sorry but your bid can't be processed because time is up for " + itemList.get(itemIndex).itemName);
+    	            		writer.flush();
+    					}
+    					
+    				}
+            		
+            		if(validBid == true && itemSold.get(itemIndex) == false) {
+            			setChanged(); 
+                		notifyObservers("ALERT: New bid of " + msg[1]  + " for " + msg[0] + " by " + message.username);  
+            		}
+            		else if (validBid == false && itemSold.get(itemIndex) == false) {
+            			writer.writeToMe("[Bid of " + msg[1] + " for " + msg[0] + " is at or below the new min price, which is " + "$" + itemList.get(itemIndex).minPrice + "]");
+                		writer.flush();
+            		}
+            		
+            	}
         		
         	}
         	
