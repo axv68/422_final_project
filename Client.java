@@ -17,6 +17,7 @@ import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.io.PrintWriter;
 import java.net.Socket;
+import java.net.URL;
 import java.util.ArrayList;
 
 import com.sun.glass.ui.Application.EventHandler;
@@ -38,6 +39,7 @@ import javafx.scene.control.ScrollPane;
 import javafx.scene.control.TextArea;
 import javafx.scene.control.TextField;
 import javafx.scene.layout.BorderPane;
+import javafx.scene.media.AudioClip;
 import javafx.scene.paint.Color;
 import javafx.stage.Stage;
 
@@ -354,11 +356,15 @@ public class Client extends Application {
 			String message = null;
 			try {
 				while ((message = fromServer.readLine()) != null) {
-					
-						System.out.println("Message is: " + message); 
 						
-						data = message; 
-						ta.appendText(data + "\n"); 
+					URL resource = getClass().getResource("dishR.wav");
+					AudioClip ding = new AudioClip(resource.toString());
+					ding.play();
+					
+					System.out.println("Message is: " + message); 
+						
+					data = message; 
+					ta.appendText(data + "\n"); 
 
 				}
 			} catch (IOException ex) {
